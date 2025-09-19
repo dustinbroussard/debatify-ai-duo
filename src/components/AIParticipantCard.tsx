@@ -90,7 +90,7 @@ export const AIParticipantCard = ({
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-white/20 bg-white/80 backdrop-blur-xl dark:border-white/10 dark:bg-[#111a34]/90">
                 {filteredModels.length === 0 ? (
-                  <SelectItem value="" disabled className="rounded-xl text-sm">
+                  <SelectItem value="no-models" disabled className="rounded-xl text-sm">
                     {models.length === 0 ? "No models available" : "No free models with current filter"}
                   </SelectItem>
                 ) : (
