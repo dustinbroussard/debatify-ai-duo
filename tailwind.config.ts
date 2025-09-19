@@ -47,16 +47,35 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
+        // AI debate specific colors
+        ai1: "hsl(var(--ai1-color))",
+        ai2: "hsl(var(--ai2-color))",
+        success: "hsl(var(--success-color))",
+        warning: "hsl(var(--warning-color))",
+        error: "hsl(var(--error-color))",
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
+      },
+      backgroundImage: {
+        "gradient-primary": "var(--gradient-primary)",
+        "gradient-ai1": "var(--gradient-ai1)",
+        "gradient-ai2": "var(--gradient-ai2)",
+        "gradient-hero": "var(--gradient-hero)",
+      },
+      boxShadow: {
+        "glow": "var(--shadow-glow)",
+        "glow-secondary": "var(--shadow-glow-secondary)",
+        "elevated": "var(--shadow-elevated)",
+      },
+      animation: {
+        "slide-in-up": "slideInUp 0.8s ease-out",
+        "glow": "glow 2s ease-in-out infinite alternate",
+        "message-slide-in": "messageSlideIn 0.5s ease-out",
+        "loading-pulse": "loadingPulse 1.5s infinite",
+        "float": "float 20s infinite linear",
+        "shimmer": "shimmer 1.2s ease-in-out infinite",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -80,10 +99,22 @@ export default {
             height: "0",
           },
         },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
+        },
       },
     },
   },
