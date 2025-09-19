@@ -28,14 +28,12 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
   }, [messages]);
 
   const LoadingIndicator = ({ participant }: { participant?: 1 | 2 }) => (
-    <div className="flex items-center justify-center gap-2 text-muted-foreground py-4">
-      <span className="text-sm">
-        {participant ? `AI ${participant} thinking` : "AI thinking"}
-      </span>
+    <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-white/30 bg-white/40 px-4 py-3 text-xs uppercase tracking-[0.24em] text-muted-foreground shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/5">
+      <span>{participant ? `AI ${participant} thinking` : "AI thinking"}</span>
       <div className="flex gap-1">
-        <div className="w-2 h-2 bg-primary rounded-full animate-loading-pulse" />
-        <div className="w-2 h-2 bg-primary rounded-full animate-loading-pulse [animation-delay:0.2s]" />
-        <div className="w-2 h-2 bg-primary rounded-full animate-loading-pulse [animation-delay:0.4s]" />
+        <div className="h-2 w-2 rounded-full bg-primary animate-loading-pulse" />
+        <div className="h-2 w-2 rounded-full bg-primary/70 animate-loading-pulse [animation-delay:0.2s]" />
+        <div className="h-2 w-2 rounded-full bg-primary/50 animate-loading-pulse [animation-delay:0.4s]" />
       </div>
     </div>
   );
@@ -48,24 +46,38 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
     return (
       <div
         className={cn(
-          "p-4 rounded-xl border-l-4 animate-message-slide-in font-mono text-sm leading-relaxed",
+          "animate-message-slide-in rounded-3xl border px-5 py-4 shadow-sm transition-transform duration-300 hover:-translate-y-0.5",
           {
-            "bg-success/10 border-l-success": isAI1,
-            "bg-ai1/10 border-l-ai1": isAI2,
-            "bg-ai2/10 border-l-ai2": isSystem,
+            "border-ai1/40 bg-gradient-to-br from-cyan-50/90 to-sky-50/60 text-foreground dark:border-ai1/40 dark:from-cyan-500/15 dark:to-sky-500/10 dark:text-white/90":
+              isAI1,
+            "border-ai2/40 bg-gradient-to-br from-pink-50/90 to-violet-50/70 text-foreground dark:border-ai2/40 dark:from-pink-500/15 dark:to-violet-500/10 dark:text-white/90":
+              isAI2,
+            "border-white/30 bg-white/80 text-foreground shadow-inner dark:border-white/10 dark:bg-white/10 dark:text-white/80":
+              isSystem,
           },
-          className
+          className,
         )}
       >
-        <div className="flex items-center gap-2 mb-2 text-xs font-semibold opacity-80">
-          {isAI1 && "AI 1"}
-          {isAI2 && "AI 2"}
-          {isSystem && "System"}
-          <span className="text-muted-foreground">
+        <div className="mb-2 flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
+          <span className="flex items-center gap-2">
+            {isAI1 && (
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-ai1 text-xs font-bold text-white shadow-glow">
+                1
+              </span>
+            )}
+            {isAI2 && (
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-ai2 text-xs font-bold text-white shadow-glow-secondary">
+                2
+              </span>
+            )}
+            {isSystem && <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900/70 text-xs font-bold text-white">∞</span>}
+            <span>{isAI1 ? "AI 1" : isAI2 ? "AI 2" : "System"}</span>
+          </span>
+          <span className="font-mono text-[0.6rem] text-muted-foreground">
             {message.timestamp.toLocaleTimeString()}
           </span>
         </div>
-        <div className="whitespace-pre-wrap">{message.text}</div>
+        <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90 dark:text-white/90">{message.text}</div>
       </div>
     );
   };
@@ -76,34 +88,34 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
 
     return (
       <div className="space-y-4">
-        <Label className="text-lg font-semibold">🗣️ Live Debate (Split View):</Label>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-success rounded-full flex items-center justify-center text-white text-xs font-bold">
+        <Label className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">Live debate · Split view</Label>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-ai1 text-xs font-bold text-white shadow-glow">
                 1
-              </div>
-              <span className="font-semibold">AI 1</span>
+              </span>
+              <span>AI 1 timeline</span>
             </div>
-            <Card className="h-[60vh] overflow-y-auto custom-scrollbar p-4 space-y-4">
+            <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
               {ai1Messages.map((message, index) => (
-                <MessageBubble key={index} message={message} />
+                <MessageBubble key={`${message.speaker}-${index}`} message={message} />
               ))}
               {isLoading && loadingParticipant === 1 && <LoadingIndicator participant={1} />}
               <div ref={leftChatEndRef} />
             </Card>
           </div>
 
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-ai1 rounded-full flex items-center justify-center text-white text-xs font-bold">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gradient-ai2 text-xs font-bold text-white shadow-glow-secondary">
                 2
-              </div>
-              <span className="font-semibold">AI 2</span>
+              </span>
+              <span>AI 2 timeline</span>
             </div>
-            <Card className="h-[60vh] overflow-y-auto custom-scrollbar p-4 space-y-4">
+            <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
               {ai2Messages.map((message, index) => (
-                <MessageBubble key={index} message={message} />
+                <MessageBubble key={`${message.speaker}-${index}`} message={message} />
               ))}
               {isLoading && loadingParticipant === 2 && <LoadingIndicator participant={2} />}
               <div ref={rightChatEndRef} />
@@ -116,22 +128,20 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
 
   return (
     <div className="space-y-4">
-      <Label className="text-lg font-semibold">🗣️ Live Debate:</Label>
-      <Card className="h-[60vh] overflow-y-auto custom-scrollbar p-4 space-y-4">
+      <Label className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">Live debate feed</Label>
+      <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
         {messages.length === 0 && (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            <p className="text-center">
-              The debate will appear here once you start it.
-              <br />
-              Configure your AI participants and click "Start Debate" to begin!
+          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+            <p className="max-w-md text-center">
+              Configure your participants and press <span className="font-semibold">Start debate</span> to watch the transcript evolve in real time.
             </p>
           </div>
         )}
-        
+
         {messages.map((message, index) => (
-          <MessageBubble key={index} message={message} />
+          <MessageBubble key={`${message.speaker}-${index}`} message={message} />
         ))}
-        
+
         {isLoading && <LoadingIndicator />}
         <div ref={chatEndRef} />
       </Card>

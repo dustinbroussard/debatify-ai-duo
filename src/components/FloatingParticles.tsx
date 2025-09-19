@@ -2,28 +2,32 @@ import { useEffect } from "react";
 
 export const FloatingParticles = () => {
   useEffect(() => {
-    const createParticles = () => {
-      const particleContainer = document.querySelector('.floating-particles');
-      if (!particleContainer) return;
+    if (typeof window === "undefined") return;
 
-      const particleCount = 30;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mediaQuery.matches) return;
 
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle animate-float';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 20 + 's';
-        particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+    const container = document.querySelector<HTMLDivElement>(".floating-particles");
+    if (!container) return;
 
-        particleContainer.appendChild(particle);
-      }
-    };
+    const particleCount = 36;
+    const particles: HTMLDivElement[] = [];
 
-    createParticles();
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement("div");
+      particle.className = "particle animate-float";
+      const size = Math.random() * 3 + 2;
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.animationDelay = `${Math.random() * 18}s`;
+      particle.style.animationDuration = `${Math.random() * 14 + 18}s`;
+      particles.push(particle);
+      container.appendChild(particle);
+    }
 
     return () => {
-      const particles = document.querySelectorAll('.particle');
-      particles.forEach(particle => particle.remove());
+      particles.forEach((particle) => particle.remove());
     };
   }, []);
 

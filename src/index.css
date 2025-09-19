@@ -1,86 +1,79 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Synthetica AI Debate Platform Design System */
+/* Debatify Duo visual system */
 
 @layer base {
   :root {
-    /* Light theme colors */
-    --background: 245 247 251 / 1;
-    --foreground: 15 23 42 / 1;
-    --card: 255 255 255 / 1;
-    --card-foreground: 15 23 42 / 1;
-    --popover: 255 255 255 / 1;
-    --popover-foreground: 15 23 42 / 1;
-    --primary: 6 182 212 / 1;
-    --primary-foreground: 255 255 255 / 1;
-    --secondary: 37 99 235 / 1;
-    --secondary-foreground: 255 255 255 / 1;
-    --muted: 238 242 247 / 1;
-    --muted-foreground: 100 116 139 / 1;
-    --accent: 239 246 255 / 1;
-    --accent-foreground: 37 99 235 / 1;
-    --destructive: 220 38 38 / 1;
-    --destructive-foreground: 255 255 255 / 1;
-    --border: 219 227 239 / 1;
-    --input: 219 227 239 / 1;
-    --ring: 6 182 212 / 1;
-    --radius: 0.5rem;
+    --background: 228 60% 96%;
+    --foreground: 222 47% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 15%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 199 88% 49%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 32% 91%;
+    --muted-foreground: 215 17% 45%;
+    --accent: 330 81% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 63%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 225 35% 84%;
+    --input: 225 35% 84%;
+    --ring: 239 84% 67%;
+    --radius: 1rem;
 
-    /* AI debate specific colors */
-    --ai1-color: 34 211 238 / 1;
-    --ai2-color: 99 102 241 / 1;
-    --success-color: 22 163 74 / 1;
-    --warning-color: 245 158 11 / 1;
-    --error-color: 220 38 38 / 1;
+    --ai1-color: 199 88% 49%;
+    --ai2-color: 330 81% 65%;
+    --success-color: 142 72% 45%;
+    --warning-color: 38 92% 52%;
+    --error-color: 0 84% 63%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(187 85% 53%) 0%, hsl(237 75% 67%) 100%);
-    --gradient-ai1: linear-gradient(135deg, hsl(188 95% 68%) 0%, hsl(189 85% 48%) 100%);
-    --gradient-ai2: linear-gradient(135deg, hsl(239 81% 68%) 0%, hsl(237 75% 67%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(187 85% 53%) 0%, hsl(237 75% 67%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%) 0%, hsl(199 88% 49%) 50%, hsl(330 81% 65%) 100%);
+    --gradient-ai1: linear-gradient(135deg, hsl(204 88% 55%) 0%, hsl(186 78% 60%) 100%);
+    --gradient-ai2: linear-gradient(135deg, hsl(330 81% 65%) 0%, hsl(266 89% 68%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(234 70% 20%) 0%, hsl(262 70% 32%) 45%, hsl(199 88% 32%) 100%);
 
-    /* Shadows */
-    --shadow-primary: 0 8px 20px rgba(2, 8, 23, 0.06);
-    --shadow-elevated: 0 24px 48px rgba(2, 8, 23, 0.12);
-    --shadow-glow: 0 0 24px hsl(var(--ai1-color) / 0.25);
-    --shadow-glow-secondary: 0 0 24px hsl(var(--ai2-color) / 0.25);
+    --shadow-primary: 0 18px 45px rgba(15, 23, 42, 0.18);
+    --shadow-elevated: 0 32px 72px rgba(15, 23, 42, 0.22);
+    --shadow-glow: 0 0 32px hsl(var(--ai1-color) / 0.45);
+    --shadow-glow-secondary: 0 0 32px hsl(var(--ai2-color) / 0.45);
 
-    /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .dark {
-    /* Dark theme colors */
-    --background: 11 18 32 / 1;
-    --foreground: 229 231 235 / 1;
-    --card: 14 22 40 / 1;
-    --card-foreground: 229 231 235 / 1;
-    --popover: 14 22 40 / 1;
-    --popover-foreground: 229 231 235 / 1;
-    --primary: 34 211 238 / 1;
-    --primary-foreground: 255 255 255 / 1;
-    --secondary: 99 102 241 / 1;
-    --secondary-foreground: 255 255 255 / 1;
-    --muted: 17 24 39 / 1;
-    --muted-foreground: 154 164 178 / 1;
-    --accent: 17 24 39 / 1;
-    --accent-foreground: 34 211 238 / 1;
-    --destructive: 239 68 68 / 1;
-    --destructive-foreground: 255 255 255 / 1;
-    --border: 31 41 55 / 1;
-    --input: 31 41 55 / 1;
-    --ring: 34 211 238 / 1;
+    --background: 232 61% 7%;
+    --foreground: 220 33% 92%;
+    --card: 232 50% 12%;
+    --card-foreground: 220 33% 92%;
+    --popover: 232 50% 14%;
+    --popover-foreground: 220 33% 92%;
+    --primary: 239 84% 72%;
+    --primary-foreground: 232 61% 7%;
+    --secondary: 199 88% 62%;
+    --secondary-foreground: 232 61% 7%;
+    --muted: 230 32% 19%;
+    --muted-foreground: 220 13% 70%;
+    --accent: 330 81% 68%;
+    --accent-foreground: 232 61% 7%;
+    --destructive: 356 82% 61%;
+    --destructive-foreground: 232 61% 7%;
+    --border: 232 38% 26%;
+    --input: 232 38% 26%;
+    --ring: 239 84% 67%;
 
-    /* Dark theme shadows */
-    --shadow-primary: 0 6px 20px rgba(0, 0, 0, 0.25);
-    --shadow-elevated: 0 24px 48px rgba(0, 0, 0, 0.35);
-    --shadow-glow: 0 0 24px hsl(var(--ai1-color) / 0.35);
-    --shadow-glow-secondary: 0 0 24px hsl(var(--ai2-color) / 0.35);
+    --shadow-primary: 0 18px 55px rgba(2, 6, 23, 0.55);
+    --shadow-elevated: 0 40px 85px rgba(2, 6, 23, 0.7);
+    --shadow-glow: 0 0 34px hsl(var(--ai1-color) / 0.65);
+    --shadow-glow-secondary: 0 0 34px hsl(var(--ai2-color) / 0.65);
   }
 
   * {
@@ -88,20 +81,19 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", sans-serif;
     background-image:
-      radial-gradient(circle at 20% 50%, hsl(var(--ai1-color) / 0.10) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(var(--ai2-color) / 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, hsl(var(--secondary) / 0.10) 0%, transparent 50%);
+      radial-gradient(circle at 15% 20%, hsl(var(--primary) / 0.18) 0%, transparent 55%),
+      radial-gradient(circle at 82% 8%, hsl(var(--accent) / 0.18) 0%, transparent 52%),
+      radial-gradient(circle at 40% 82%, hsl(var(--secondary) / 0.14) 0%, transparent 56%);
+    background-attachment: fixed;
   }
 
-  /* Typography */
   .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: "JetBrains Mono", monospace;
   }
 
-  /* Custom animations */
   @keyframes slideInUp {
     from {
       opacity: 0;
@@ -114,18 +106,18 @@
   }
 
   @keyframes glow {
-    from { 
-      box-shadow: 0 0 20px hsl(var(--ai1-color) / 0.2); 
+    from {
+      box-shadow: 0 0 20px hsl(var(--ai1-color) / 0.2);
     }
-    to { 
-      box-shadow: 0 0 30px hsl(var(--ai1-color) / 0.4), 0 0 40px hsl(var(--ai2-color) / 0.2); 
+    to {
+      box-shadow: 0 0 34px hsl(var(--ai1-color) / 0.4), 0 0 42px hsl(var(--ai2-color) / 0.22);
     }
   }
 
   @keyframes messageSlideIn {
     from {
       opacity: 0;
-      transform: translateX(-20px);
+      transform: translateX(-16px);
     }
     to {
       opacity: 1;
@@ -134,12 +126,14 @@
   }
 
   @keyframes loadingPulse {
-    0%, 60%, 100% {
+    0%,
+    60%,
+    100% {
       transform: scale(1);
       opacity: 1;
     }
     30% {
-      transform: scale(1.4);
+      transform: scale(1.35);
       opacity: 0.7;
     }
   }
@@ -149,11 +143,11 @@
       transform: translateY(100vh) rotate(0deg);
       opacity: 0;
     }
-    10% {
-      opacity: 0.3;
+    12% {
+      opacity: 0.35;
     }
-    90% {
-      opacity: 0.3;
+    88% {
+      opacity: 0.35;
     }
     100% {
       transform: translateY(-100vh) rotate(360deg);
@@ -162,40 +156,38 @@
   }
 
   @keyframes shimmer {
-    0% { 
-      background-position: 100% 0; 
+    0% {
+      background-position: 100% 0;
     }
-    100% { 
-      background-position: -100% 0; 
+    100% {
+      background-position: -100% 0;
     }
   }
 
-  /* Animation utilities */
   .animate-slide-in-up {
     animation: slideInUp 0.8s ease-out;
   }
 
   .animate-glow {
-    animation: glow 2s ease-in-out infinite alternate;
+    animation: glow 2.4s ease-in-out infinite alternate;
   }
 
   .animate-message-slide-in {
-    animation: messageSlideIn 0.5s ease-out;
+    animation: messageSlideIn 0.55s ease-out;
   }
 
   .animate-loading-pulse {
-    animation: loadingPulse 1.5s infinite;
+    animation: loadingPulse 1.6s infinite;
   }
 
   .animate-float {
-    animation: float 20s infinite linear;
+    animation: float 26s infinite linear;
   }
 
   .animate-shimmer {
     animation: shimmer 1.2s ease-in-out infinite;
   }
 
-  /* Custom component styles */
   .gradient-text {
     background: var(--gradient-primary);
     background-clip: text;
@@ -203,21 +195,18 @@
     -webkit-text-fill-color: transparent;
   }
 
-  .ai1-gradient {
-    background: var(--gradient-ai1);
-  }
-
-  .ai2-gradient {
-    background: var(--gradient-ai2);
-  }
-
-  .hero-gradient {
-    background: var(--gradient-hero);
-  }
-
   .glass-effect {
-    backdrop-filter: blur(10px);
-    border: 1px solid hsl(var(--border));
+    position: relative;
+    backdrop-filter: blur(22px);
+    background: linear-gradient(145deg, hsla(var(--card) / 0.9), hsla(var(--card) / 0.7));
+    border: 1px solid hsla(var(--border) / 0.55);
+    box-shadow: var(--shadow-primary);
+  }
+
+  .dark .glass-effect {
+    background: linear-gradient(145deg, hsla(var(--card) / 0.92), hsla(var(--card) / 0.62));
+    border-color: hsla(var(--border) / 0.75);
+    box-shadow: var(--shadow-elevated);
   }
 
   .floating-particles {
@@ -232,43 +221,34 @@
 
   .particle {
     position: absolute;
-    width: 2px;
-    height: 2px;
-    background: hsl(var(--ai1-color));
+    width: 3px;
+    height: 3px;
+    background: hsl(var(--primary));
     border-radius: 50%;
-    opacity: 0.3;
+    opacity: 0.35;
+    box-shadow: 0 0 16px hsl(var(--primary) / 0.65);
   }
 
   .particle:nth-child(even) {
-    background: hsl(var(--ai2-color));
+    background: hsl(var(--accent));
+    box-shadow: 0 0 16px hsl(var(--accent) / 0.65);
   }
 
-  /* Scrollbar styling */
   .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
     background: hsl(var(--muted));
-    border-radius: 10px;
+    border-radius: 9999px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
-    border-radius: 10px;
+    border-radius: 9999px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary));
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
   }
 }

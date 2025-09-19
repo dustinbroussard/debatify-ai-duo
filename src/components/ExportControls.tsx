@@ -43,18 +43,15 @@ export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) 
     URL.revokeObjectURL(url);
   };
 
-  const exportAsPdf = () => {
-    // For now, we'll create a simple HTML version for printing
+  const exportAsHtml = () => {
     const content = messages
       .map((msg) => {
         const speaker = msg.speaker === 1 ? "AI 1" : msg.speaker === 2 ? "AI 2" : "System";
         const timestamp = msg.timestamp.toLocaleString();
         return `
-          <div style="margin-bottom: 20px; padding: 15px; border-left: 4px solid ${
-            msg.speaker === 1 ? "#16a34a" : msg.speaker === 2 ? "#22d3ee" : "#6366f1"
-          }; background: #f8f9fa;">
-            <h3 style="margin: 0 0 10px 0; color: #333;">${speaker} (${timestamp})</h3>
-            <p style="margin: 0; white-space: pre-wrap; font-family: monospace;">${msg.text}</p>
+          <div style="margin-bottom: 20px; padding: 18px; border-radius: 16px; border: 1px solid rgba(99,102,241,0.18); background: rgba(255,255,255,0.78);">
+            <h3 style="margin: 0 0 10px 0; font-size: 16px; text-transform: uppercase; letter-spacing: 0.12em; color: #1f2937;">${speaker} (${timestamp})</h3>
+            <pre style="margin: 0; white-space: pre-wrap; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #111827;">${msg.text}</pre>
           </div>
         `;
       })
@@ -64,15 +61,17 @@ export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) 
       <!DOCTYPE html>
       <html>
         <head>
+          <meta charset="utf-8" />
           <title>AI Debate Transcript</title>
           <style>
-            body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-            h1 { text-align: center; color: #333; }
+            body { font-family: 'Inter', sans-serif; max-width: 880px; margin: 0 auto; padding: 40px; background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%); }
+            h1 { text-align: center; color: #1f2937; letter-spacing: 0.18em; text-transform: uppercase; }
+            p { color: #475569; }
           </style>
         </head>
         <body>
           <h1>AI Debate Transcript</h1>
-          <p style="text-align: center; color: #666;">Generated on ${new Date().toLocaleString()}</p>
+          <p style="text-align: center; color: #475569;">Generated on ${new Date().toLocaleString()}</p>
           ${content}
         </body>
       </html>
@@ -91,13 +90,13 @@ export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) 
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".json";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = (loadEvent) => {
           try {
-            const content = e.target?.result as string;
+            const content = loadEvent.target?.result as string;
             const imported = JSON.parse(content);
             if (Array.isArray(imported)) {
               const revived = imported.map((m) => ({
@@ -119,52 +118,63 @@ export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) 
   };
 
   return (
-    <Card className="glass-effect">
-      <div className="p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="font-semibold text-muted-foreground">Export Debate</div>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={exportAsMarkdown}
-              disabled={messages.length === 0}
-              variant="outline"
-              size="sm"
-            >
-              <FileText className="w-4 h-4" />
-              Markdown
-            </Button>
-            
-            <Button
-              onClick={exportAsJson}
-              disabled={messages.length === 0}
-              variant="outline"
-              size="sm"
-            >
-              <Download className="w-4 h-4" />
-              JSON
-            </Button>
-            
-            <Button
-              onClick={exportAsPdf}
-              disabled={messages.length === 0}
-              variant="outline"
-              size="sm"
-            >
-              <FileDown className="w-4 h-4" />
-              HTML
-            </Button>
-            
-            <Button
-              onClick={importFromJson}
-              variant="outline"
-              size="sm"
-              title="Load transcript JSON"
-            >
-              <Upload className="w-4 h-4" />
-              Import
-            </Button>
-          </div>
+    <Card className="glass-effect flex flex-col gap-4 p-6">
+      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Export & Import</h3>
+          <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+            Take debates offline or bring transcripts back to life
+          </p>
         </div>
+        <span className="rounded-full border border-white/30 bg-white/40 px-3 py-1 text-xs uppercase tracking-[0.22em] text-muted-foreground shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/10">
+          {messages.length} messages
+        </span>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <Button
+          onClick={exportAsMarkdown}
+          disabled={messages.length === 0}
+          variant="outline"
+          size="sm"
+          className="rounded-2xl border-white/30 bg-white/40 shadow-inner backdrop-blur hover:bg-white/60 dark:border-white/10 dark:bg-white/10"
+        >
+          <FileText className="h-4 w-4" />
+          Markdown
+        </Button>
+
+        <Button
+          onClick={exportAsJson}
+          disabled={messages.length === 0}
+          variant="outline"
+          size="sm"
+          className="rounded-2xl border-white/30 bg-white/40 shadow-inner backdrop-blur hover:bg-white/60 dark:border-white/10 dark:bg-white/10"
+        >
+          <Download className="h-4 w-4" />
+          JSON
+        </Button>
+
+        <Button
+          onClick={exportAsHtml}
+          disabled={messages.length === 0}
+          variant="outline"
+          size="sm"
+          className="rounded-2xl border-white/30 bg-white/40 shadow-inner backdrop-blur hover:bg-white/60 dark:border-white/10 dark:bg-white/10"
+        >
+          <FileDown className="h-4 w-4" />
+          HTML
+        </Button>
+
+        <Button
+          onClick={importFromJson}
+          variant="outline"
+          size="sm"
+          className="rounded-2xl border-white/30 bg-white/40 shadow-inner backdrop-blur hover:bg-white/60 dark:border-white/10 dark:bg-white/10"
+          title="Load transcript JSON"
+        >
+          <Upload className="h-4 w-4" />
+          Import
+        </Button>
       </div>
     </Card>
   );
