@@ -100,7 +100,12 @@ export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) 
             const content = e.target?.result as string;
             const imported = JSON.parse(content);
             if (Array.isArray(imported)) {
-              onImportJson(imported);
+              const revived = imported.map((m) => ({
+                speaker: m.speaker,
+                text: m.text,
+                timestamp: new Date(m.timestamp),
+              }));
+              onImportJson(revived);
             }
           } catch (error) {
             console.error("Failed to import JSON:", error);

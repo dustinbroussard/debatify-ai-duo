@@ -11,6 +11,7 @@ interface APIKeyManagerProps {
   onAddKey: (key: string) => void;
   onRemoveKey: (key: string) => void;
   onClearAllKeys: () => void;
+  onNextKey?: () => void;
 }
 
 export const APIKeyManager = ({
@@ -19,6 +20,7 @@ export const APIKeyManager = ({
   onAddKey,
   onRemoveKey,
   onClearAllKeys,
+  onNextKey,
 }: APIKeyManagerProps) => {
   const [newKey, setNewKey] = useState("");
 
@@ -66,8 +68,15 @@ export const APIKeyManager = ({
           {currentKey && (
             <div className="p-3 bg-muted rounded-lg border">
               <div className="text-xs text-muted-foreground mb-1">Currently Using:</div>
-              <div className="font-mono text-sm">
-                {formatKeyDisplay(currentKey)} (Key {currentKeyIndex + 1} of {apiKeys.length})
+              <div className="flex items-center justify-between gap-2">
+                <div className="font-mono text-sm">
+                  {formatKeyDisplay(currentKey)} (Key {currentKeyIndex + 1} of {apiKeys.length})
+                </div>
+                {onNextKey && (
+                  <Button size="sm" variant="outline" onClick={onNextKey}>
+                    Next Key
+                  </Button>
+                )}
               </div>
             </div>
           )}

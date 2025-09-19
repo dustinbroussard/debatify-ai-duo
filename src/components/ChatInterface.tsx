@@ -13,7 +13,7 @@ interface ChatInterfaceProps {
   messages: Message[];
   splitView: boolean;
   isLoading: boolean;
-  loadingParticipant?: 1 | 2;
+  loadingParticipant?: 1 | 2 | null;
 }
 
 export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipant }: ChatInterfaceProps) => {
