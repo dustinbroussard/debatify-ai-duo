@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { MutableRefObject, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -16,16 +16,95 @@ interface ChatInterfaceProps {
   loadingParticipant?: 1 | 2 | null;
 }
 
+const SCROLL_THRESHOLD_PX = 40;
+
+const updateScrollLock = (
+  container: HTMLDivElement,
+  scrollLockRef: MutableRefObject<boolean>,
+) => {
+  const distanceToBottom = container.scrollHeight - (container.scrollTop + container.clientHeight);
+  scrollLockRef.current = distanceToBottom <= SCROLL_THRESHOLD_PX;
+};
+
 export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipant }: ChatInterfaceProps) => {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const leftChatEndRef = useRef<HTMLDivElement>(null);
   const rightChatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const leftChatContainerRef = useRef<HTMLDivElement>(null);
+  const rightChatContainerRef = useRef<HTMLDivElement>(null);
+  const shouldScrollMainRef = useRef(true);
+  const shouldScrollLeftRef = useRef(true);
+  const shouldScrollRightRef = useRef(true);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    leftChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    rightChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (!splitView) {
+      if (shouldScrollMainRef.current) {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (shouldScrollLeftRef.current) {
+      leftChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+
+    if (shouldScrollRightRef.current) {
+      rightChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, splitView, isLoading, loadingParticipant]);
+
+  useEffect(() => {
+    const container = chatContainerRef.current;
+
+    if (!container) {
+      shouldScrollMainRef.current = true;
+      return;
+    }
+
+    const handleScroll = () => updateScrollLock(container, shouldScrollMainRef);
+
+    handleScroll();
+    container.addEventListener("scroll", handleScroll);
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, [splitView]);
+
+  useEffect(() => {
+    if (!splitView) {
+      shouldScrollLeftRef.current = true;
+      shouldScrollRightRef.current = true;
+      return;
+    }
+
+    const leftContainer = leftChatContainerRef.current;
+    const rightContainer = rightChatContainerRef.current;
+
+    const handleLeftScroll = () => {
+      if (leftContainer) {
+        updateScrollLock(leftContainer, shouldScrollLeftRef);
+      }
+    };
+
+    const handleRightScroll = () => {
+      if (rightContainer) {
+        updateScrollLock(rightContainer, shouldScrollRightRef);
+      }
+    };
+
+    leftContainer?.addEventListener("scroll", handleLeftScroll);
+    rightContainer?.addEventListener("scroll", handleRightScroll);
+
+    handleLeftScroll();
+    handleRightScroll();
+
+    return () => {
+      leftContainer?.removeEventListener("scroll", handleLeftScroll);
+      rightContainer?.removeEventListener("scroll", handleRightScroll);
+    };
+  }, [splitView]);
 
   const LoadingIndicator = ({ participant }: { participant?: 1 | 2 }) => (
     <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-white/30 bg-white/40 px-4 py-3 text-xs uppercase tracking-[0.24em] text-muted-foreground shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/5">
@@ -97,7 +176,10 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
               </span>
               <span>AI 1 timeline</span>
             </div>
-            <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
+            <Card
+              ref={leftChatContainerRef}
+              className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5"
+            >
               {ai1Messages.map((message, index) => (
                 <MessageBubble key={`${message.speaker}-${index}`} message={message} />
               ))}
@@ -113,7 +195,10 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
               </span>
               <span>AI 2 timeline</span>
             </div>
-            <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
+            <Card
+              ref={rightChatContainerRef}
+              className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5"
+            >
               {ai2Messages.map((message, index) => (
                 <MessageBubble key={`${message.speaker}-${index}`} message={message} />
               ))}
@@ -129,7 +214,10 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
   return (
     <div className="space-y-4">
       <Label className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">Live debate feed</Label>
-      <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
+      <Card
+        ref={chatContainerRef}
+        className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5"
+      >
         {messages.length === 0 && (
           <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
             <p className="max-w-md text-center">
