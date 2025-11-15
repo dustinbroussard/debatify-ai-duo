@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, FileDown, Upload } from "lucide-react";
+import { z } from "zod";
 
 interface Message {
   speaker: 1 | 2 | "system";
@@ -14,6 +15,13 @@ interface ExportControlsProps {
 }
 
 export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) => {
+  const MessageSchema = z.object({
+    speaker: z.union([z.literal(1), z.literal(2), z.literal("system")]),
+    text: z.string(),
+    timestamp: z.union([z.string(), z.number(), z.date()]),
+  });
+  const MessageArraySchema = z.array(MessageSchema);
+
   const exportAsMarkdown = () => {
     const markdown = messages
       .map((msg) => {
@@ -44,6 +52,13 @@ export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) 
   };
 
   const exportAsHtml = () => {
+    const escapeHtml = (str: string) =>
+      str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     const content = messages
       .map((msg) => {
         const speaker = msg.speaker === 1 ? "AI 1" : msg.speaker === 2 ? "AI 2" : "System";
@@ -51,7 +66,7 @@ export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) 
         return `
           <div style="margin-bottom: 20px; padding: 18px; border-radius: 16px; border: 1px solid rgba(99,102,241,0.18); background: rgba(255,255,255,0.78);">
             <h3 style="margin: 0 0 10px 0; font-size: 16px; text-transform: uppercase; letter-spacing: 0.12em; color: #1f2937;">${speaker} (${timestamp})</h3>
-            <pre style="margin: 0; white-space: pre-wrap; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #111827;">${msg.text}</pre>
+            <pre style="margin: 0; white-space: pre-wrap; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #111827;">${escapeHtml(msg.text)}</pre>
           </div>
         `;
       })
@@ -97,15 +112,14 @@ export const ExportControls = ({ messages, onImportJson }: ExportControlsProps) 
         reader.onload = (loadEvent) => {
           try {
             const content = loadEvent.target?.result as string;
-            const imported = JSON.parse(content);
-            if (Array.isArray(imported)) {
-              const revived = imported.map((m) => ({
-                speaker: m.speaker,
-                text: m.text,
-                timestamp: new Date(m.timestamp),
-              }));
-              onImportJson(revived);
-            }
+            const parsed = JSON.parse(content);
+            const validated = MessageArraySchema.parse(parsed);
+            const revived = validated.map((m) => ({
+              speaker: m.speaker,
+              text: m.text,
+              timestamp: m.timestamp instanceof Date ? m.timestamp : new Date(m.timestamp),
+            }));
+            onImportJson(revived);
           } catch (error) {
             console.error("Failed to import JSON:", error);
             alert("Failed to import JSON file. Please check the file format.");

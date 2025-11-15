@@ -76,7 +76,7 @@ export const AIParticipantCard = ({
               value={systemPrompt}
               onChange={(event) => onSystemPromptChange(event.target.value)}
               placeholder={`Define the persona and stance for AI ${participantNumber}...`}
-              className="mt-2 min-h-[140px] resize-vertical rounded-2xl border border-white/30 bg-white/60 font-mono text-sm shadow-inner transition-all duration-300 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 dark:border-white/10 dark:bg-white/5"
+              className="mt-2 min-h-[140px] resize-y rounded-2xl border border-white/30 bg-white/60 font-mono text-sm shadow-inner transition-all duration-300 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 dark:border-white/10 dark:bg-white/5"
             />
           </div>
 
@@ -132,7 +132,11 @@ export const AIParticipantCard = ({
                 id={`maxTokens${participantNumber}`}
                 type="number"
                 value={maxTokens}
-                onChange={(event) => onMaxTokensChange(parseInt(event.target.value, 10) || 512)}
+                onChange={(event) => {
+                  const raw = parseInt(event.target.value, 10);
+                  const next = Number.isFinite(raw) ? Math.min(4000, Math.max(50, raw)) : 512;
+                  onMaxTokensChange(next);
+                }}
                 min={50}
                 max={4000}
                 className="rounded-2xl border-white/30 bg-white/70 font-mono text-sm shadow-inner focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 dark:border-white/10 dark:bg-white/5"

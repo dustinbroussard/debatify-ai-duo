@@ -60,6 +60,32 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Quick start
+
+Local development with a mock streaming backend (no API key needed):
+
+```
+npm install
+npm run dev:mock
+```
+
+Real API streaming via OpenRouter (requires at least one API key added in-app):
+
+```
+npm install
+npm run dev
+```
+
+In the app, add one or more OpenRouter API keys under “OpenRouter API Keys”. Keys are stored locally in your browser.
+
+## Quality and CI
+
+- Lint: `npm run lint`
+- Type check: `npm run typecheck`
+- Build: `npm run build`
+
+This repo includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that runs lint, typecheck, and build on pushes and pull requests.
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/1445107a-5d67-4b63-aabd-46b0e568b363) and click on Share -> Publish.

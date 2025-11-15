@@ -108,21 +108,25 @@ const Index = () => {
     }
   }, []);
 
+  const currentApiKey = apiKeys[currentKeyIndex];
+
   useEffect(() => {
     const loadModels = async () => {
       const cacheKey = "synthetica-models-cache";
       const cached = localStorage.getItem(cacheKey);
+      let usedFreshCache = false;
       if (cached) {
         try {
           const parsed = JSON.parse(cached);
           if (parsed?.ts && Date.now() - parsed.ts < 6 * 60 * 60 * 1000 && Array.isArray(parsed.models)) {
             setModels(parsed.models);
+            usedFreshCache = true;
           }
         } catch (error) {
           console.debug("Ignoring invalid models cache", error);
         }
       }
-      const key = apiKeys[currentKeyIndex];
+      const key = currentApiKey;
       if (!key) return;
       try {
         const list = await fetchModels(key);
@@ -130,7 +134,7 @@ const Index = () => {
         localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), models: list }));
       } catch (error) {
         console.warn("Failed to fetch models, falling back to defaults", error);
-        if (!cached) {
+        if (!usedFreshCache) {
           setModels([
             { id: "anthropic/claude-3.5-sonnet", name: "Claude 3.5 Sonnet", pricing: { prompt: 0.003, completion: 0.015 } },
             { id: "openai/gpt-4o", name: "GPT-4o", pricing: { prompt: 0.005, completion: 0.015 } },
@@ -140,8 +144,24 @@ const Index = () => {
       }
     };
     loadModels();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiKeys.length, currentKeyIndex]);
+  }, [currentApiKey]);
+
+  // Auto-select a default model for UX if none selected yet and models are available
+  useEffect(() => {
+    if (!models.length) return;
+    setAI1Config((prev) => {
+      if (prev.model) return prev;
+      const free = models.find((m) => m.pricing && m.pricing.prompt === 0 && m.pricing.completion === 0);
+      const fallback = free?.id || models[0]?.id || "";
+      return fallback && fallback !== prev.model ? { ...prev, model: fallback } : prev;
+    });
+    setAI2Config((prev) => {
+      if (prev.model) return prev;
+      const free = models.find((m) => m.pricing && m.pricing.prompt === 0 && m.pricing.completion === 0);
+      const fallback = free?.id || models[0]?.id || "";
+      return fallback && fallback !== prev.model ? { ...prev, model: fallback } : prev;
+    });
+  }, [models]);
 
   useEffect(() => {
     messagesRef.current = debateState.messages;
@@ -250,6 +270,7 @@ const Index = () => {
         const maxAttempts = Math.max(1, Math.min(6, apiKeys.length * 2));
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
           try {
+            let lastFlush = 0;
             for await (const chunk of streamChatCompletion({
               apiKey,
               model: cfg.model,
@@ -266,13 +287,24 @@ const Index = () => {
             })) {
               accumulated += chunk;
               completionTokens = estimateTokens(accumulated);
-              setDebateState((prev) => ({
-                ...prev,
-                messages: prev.messages.map((message, index, arr) =>
-                  index === arr.length - 1 ? { ...message, text: accumulated } : message,
-                ),
-              }));
+              const now = performance.now();
+              if (now - lastFlush > 60) {
+                lastFlush = now;
+                setDebateState((prev) => ({
+                  ...prev,
+                  messages: prev.messages.map((message, index, arr) =>
+                    index === arr.length - 1 ? { ...message, text: accumulated } : message,
+                  ),
+                }));
+              }
             }
+            // Final flush to ensure latest text is rendered
+            setDebateState((prev) => ({
+              ...prev,
+              messages: prev.messages.map((message, index, arr) =>
+                index === arr.length - 1 ? { ...message, text: accumulated } : message,
+              ),
+            }));
             break;
           } catch (error) {
             const status = error instanceof HttpError ? error.status : 0;

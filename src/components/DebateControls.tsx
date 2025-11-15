@@ -60,7 +60,11 @@ export const DebateControls = ({
               id="maxTurns"
               type="number"
               value={maxTurns}
-              onChange={(event) => onMaxTurnsChange(parseInt(event.target.value, 10) || 20)}
+              onChange={(event) => {
+                const raw = parseInt(event.target.value, 10);
+                const next = Number.isFinite(raw) ? Math.min(100, Math.max(1, raw)) : 20;
+                onMaxTurnsChange(next);
+              }}
               min={1}
               max={100}
               className="max-w-[120px] text-center font-mono"

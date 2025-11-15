@@ -22,13 +22,19 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
   const rightChatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    leftChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    rightChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const prefersReduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = prefersReduced ? "auto" : "smooth";
+    chatEndRef.current?.scrollIntoView({ behavior });
+    leftChatEndRef.current?.scrollIntoView({ behavior });
+    rightChatEndRef.current?.scrollIntoView({ behavior });
   }, [messages]);
 
   const LoadingIndicator = ({ participant }: { participant?: 1 | 2 }) => (
-    <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-white/30 bg-white/40 px-4 py-3 text-xs uppercase tracking-[0.24em] text-muted-foreground shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/5">
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-white/30 bg-white/40 px-4 py-3 text-xs uppercase tracking-[0.24em] text-muted-foreground shadow-inner backdrop-blur dark:border-white/10 dark:bg-white/5"
+    >
       <span>{participant ? `AI ${participant} thinking` : "AI thinking"}</span>
       <div className="flex gap-1">
         <div className="h-2 w-2 rounded-full bg-primary animate-loading-pulse" />
@@ -97,7 +103,13 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
               </span>
               <span>AI 1 timeline</span>
             </div>
-            <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
+            <Card
+              className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5"
+              role="log"
+              aria-live="polite"
+              aria-relevant="additions"
+              aria-busy={isLoading && loadingParticipant === 1}
+            >
               {ai1Messages.map((message, index) => (
                 <MessageBubble key={`${message.speaker}-${index}`} message={message} />
               ))}
@@ -113,7 +125,13 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
               </span>
               <span>AI 2 timeline</span>
             </div>
-            <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
+            <Card
+              className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5"
+              role="log"
+              aria-live="polite"
+              aria-relevant="additions"
+              aria-busy={isLoading && loadingParticipant === 2}
+            >
               {ai2Messages.map((message, index) => (
                 <MessageBubble key={`${message.speaker}-${index}`} message={message} />
               ))}
@@ -129,7 +147,13 @@ export const ChatInterface = ({ messages, splitView, isLoading, loadingParticipa
   return (
     <div className="space-y-4">
       <Label className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">Live debate feed</Label>
-      <Card className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5">
+      <Card
+        className="glass-effect h-[60vh] overflow-y-auto custom-scrollbar space-y-4 p-5"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-busy={isLoading}
+      >
         {messages.length === 0 && (
           <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
             <p className="max-w-md text-center">

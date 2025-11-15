@@ -1,5 +1,7 @@
 export type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
+const MOCK_MODE = ((import.meta as ImportMeta).env?.VITE_MOCK_OPENROUTER === "1") || false;
+
 export class HttpError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -24,6 +26,31 @@ export type StreamOptions = {
 export async function* streamChatCompletion(opts: StreamOptions): AsyncGenerator<string, void, unknown> {
   const { apiKey, model, messages, temperature = 0.9, top_p = 1.0, frequency_penalty = 0, max_tokens = 512, signal } =
     opts;
+
+  // Mock mode for local development without real API keys
+  if (MOCK_MODE || apiKey === "mock") {
+    let lastUser = "Begin the debate.";
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i]?.role === "user") {
+        lastUser = messages[i].content;
+        break;
+      }
+    }
+    const persona = messages.find((m) => m.role === "system")?.content?.slice(0, 48) ?? "AI";
+    const reply = `(${model || "mock-model"}) Responding to: "${lastUser.slice(0, 120)}"\n\nPersona: ${persona.slice(0, 48)}...\n\nThis is a mock streaming response for development.`;
+    let emitted = 0;
+    const chunks = reply.match(/.{1,24}/g) ?? [reply];
+    for (const chunk of chunks) {
+      if (signal?.aborted) break;
+      await new Promise((r) => setTimeout(r, 30));
+      emitted += chunk.length;
+      yield chunk;
+    }
+    const promptTokens = estimateTokens(messages.map((m) => m.content).join("\n\n"));
+    const completionTokens = estimateTokens(reply);
+    opts.onUsage?.({ prompt_tokens: promptTokens, completion_tokens: completionTokens, total_tokens: promptTokens + completionTokens });
+    return;
+  }
 
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
@@ -96,6 +123,13 @@ export type ModelInfo = {
 };
 
 export async function fetchModels(apiKey: string): Promise<ModelInfo[]> {
+  if (MOCK_MODE || apiKey === "mock") {
+    return [
+      { id: "mock/free-small", name: "Mock Free Small", pricing: { prompt: 0, completion: 0 }, is_free: true },
+      { id: "mock/pro-medium", name: "Mock Pro Medium", pricing: { prompt: 0.002, completion: 0.006 } },
+      { id: "mock/pro-large", name: "Mock Pro Large", pricing: { prompt: 0.004, completion: 0.012 } },
+    ];
+  }
   const res = await fetch("https://openrouter.ai/api/v1/models", {
     headers: {
       Authorization: `Bearer ${apiKey}`,
